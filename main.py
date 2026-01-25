@@ -72,10 +72,11 @@ background = transform.scale(
     image.load("PingPong/Backgrounds/background.png"),
     (window_width, window_height)
 )
+ball_speed_original = 10
 
 player1 = Player("PingPong/PingPong/racket.png", 0+player_range_from_center, window_height/2, 30, 100, 10)
 player2 = Player("PingPong/PingPong/racket.png", window_width-player_range_from_center-30, window_height/2, 30, 100, 10)
-ball = Ball("PingPong/PingPong/tenis_ball.png", window_width/2, window_height/2, 20, 20, 6)
+ball = Ball("PingPong/PingPong/tenis_ball.png", window_width/2, window_height/2, 20, 20, ball_speed_original)
 
 ball_bounce_sound = mixer.Sound("PingPong/PingPong/fire.ogg")
 gameover_sound = mixer.Sound("PingPong/PingPong/gameover.ogg")
@@ -89,7 +90,7 @@ player2win = 0
 
 def Retry():
     global finish
-    ball.speed = 6
+    ball.speed = ball_speed_original
     ball.rect.x = window_width/2
     ball.rect.y = window_height/2
     player1.rect.x = 0+player_range_from_center
@@ -104,6 +105,16 @@ def reset_score():
     global player2win
     player1win = 0
     player2win = 0
+
+def get_difficulty():
+    difficulty = "Easy"
+    if ball.speed >= 20 and ball.speed < 30:
+        difficulty = "Medium"
+    if ball.speed >= 30 and ball.speed < 40:
+        difficulty = "Hard"
+    if ball.speed >= 40:
+        difficulty = "Hard++"
+    return difficulty
 
 while running:
     for event_i in event.get():
@@ -151,6 +162,9 @@ while running:
 
     text_p2_win = game_font.render("Player 2 Win: " + str(player2win), 1, BLACK)
     window.blit(text_p2_win, (30, 80))
+
+    text_difficulty = game_font.render("Difficulty: " + str(get_difficulty()), 1, BLACK)
+    window.blit(text_difficulty, (30, 130))
 
 
     clock.tick(FPS)
