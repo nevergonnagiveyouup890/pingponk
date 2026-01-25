@@ -53,14 +53,14 @@ FPS = 60
 
 
 init()
-#mixer.init()
-#mixer.music.load("")
-#mixer.music.play()
+mixer.init()
 
 font.init()
 game_font = font.Font(None, 72)
 
 WHITE = (255,255,255)
+GOLD = (255, 215, 0)
+BLACK = (0, 0, 0)
 
 window_width = 1366
 window_height = 766
@@ -75,13 +75,21 @@ background = transform.scale(
 
 player1 = Player("PingPong/PingPong/racket.png", 0+player_range_from_center, window_height/2, 30, 100, 10)
 player2 = Player("PingPong/PingPong/racket.png", window_width-player_range_from_center-30, window_height/2, 30, 100, 10)
-ball = Ball("PingPong/PingPong/tenis_ball.png", window_width/2, window_height/2, 20, 20, 3)
+ball = Ball("PingPong/PingPong/tenis_ball.png", window_width/2, window_height/2, 20, 20, 11)
+
+ball_bounce_sound = mixer.Sound("PingPong/PingPong/fire.ogg")
+gameover_sound = mixer.Sound("PingPong/PingPong/gameover.ogg")
+retry_sound = mixer.Sound("PingPong/PingPong/retry.ogg")
+retry_sound.play()
 
 finish = False
 win_player = 0
+player1win = 0
+player2win = 0
 
 def Retry():
     global finish
+    ball.speed = 11
     ball.rect.x = window_width/2
     ball.rect.y = window_height/2
     player1.rect.x = 0+player_range_from_center
@@ -89,6 +97,13 @@ def Retry():
     player2.rect.x = window_width-player_range_from_center-30
     player2.rect.y = window_height/2
     finish = False
+    retry_sound.play()
+
+def reset_score():
+    global player1win
+    global player2win
+    player1win = 0
+    player2win = 0
 
 while running:
     for event_i in event.get():
@@ -97,7 +112,8 @@ while running:
         if event_i.type == KEYDOWN:
             if event_i.key == K_SPACE and finish:
                 Retry()
-                print("Retry")
+            if event_i.key == K_r and finish:
+                reset_score()
 
     if not finish: 
         window.blit(background, (0, 0))
@@ -112,17 +128,29 @@ while running:
     
         if sprite.collide_rect(player1, ball) or sprite.collide_rect(player2, ball):
             ball.directx *= -1
+            ball.speed += 0.2
+            ball_bounce_sound.play()
         if ball.rect.x < 0:
             win_player = 2
+            player2win += 1
             finish = True
+            gameover_sound.play()
         if ball.rect.x > window_width:
             win_player = 1
+            player1win += 1
             finish = True
+            gameover_sound.play()
 
     else:
-        text_failed = game_font.render("Player_" + str(win_player) + "Won The Game", 1, WHITE)
+        text_failed = game_font.render("Player " + str(win_player) + " Won The Game", 1, GOLD)
         text_failed_rect = text_failed.get_rect(center=(window_width // 2, window_height // 2))
         window.blit(text_failed, text_failed_rect)
+    
+    text_p1_win = game_font.render("Player 1 Win: " + str(player1win), 1, BLACK)
+    window.blit(text_p1_win, (30, 30))
+
+    text_p2_win = game_font.render("Player 2 Win: " + str(player2win), 1, BLACK)
+    window.blit(text_p2_win, (30, 80))
 
 
     clock.tick(FPS)
