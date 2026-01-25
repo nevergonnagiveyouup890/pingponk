@@ -75,7 +75,7 @@ background = transform.scale(
 
 player1 = Player("PingPong/PingPong/racket.png", 0+player_range_from_center, window_height/2, 30, 100, 10)
 player2 = Player("PingPong/PingPong/racket.png", window_width-player_range_from_center-30, window_height/2, 30, 100, 10)
-ball = Ball("PingPong/PingPong/tenis_ball.png", window_width/2, window_height/2, 20, 20, 11)
+ball = Ball("PingPong/PingPong/tenis_ball.png", window_width/2, window_height/2, 20, 20, 6)
 
 ball_bounce_sound = mixer.Sound("PingPong/PingPong/fire.ogg")
 gameover_sound = mixer.Sound("PingPong/PingPong/gameover.ogg")
@@ -89,7 +89,7 @@ player2win = 0
 
 def Retry():
     global finish
-    ball.speed = 11
+    ball.speed = 6
     ball.rect.x = window_width/2
     ball.rect.y = window_height/2
     player1.rect.x = 0+player_range_from_center
